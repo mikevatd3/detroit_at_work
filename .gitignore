@@ -3,3 +3,4 @@ config.toml
 *.json
 *.csv
 __pycache__
+env

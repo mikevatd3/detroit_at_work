@@ -1,109 +1,142 @@
-# Topic is the highest level of organization. It serves as a container
-# for datasets that should live together in their own schema.
 name = "detroit_at_work"
 description = "Detroit at Work publishes data about jobs and trainings available, these tools gather and organize that information."
 schema = "detroit_at_work"
 
+[tables.trainings]
+name="trainings"
+description = "Detroit at Work promotes a variety of training programs in fields such as healthcare, IT, transportation, skilled trades, and manufacturing. We are interested in the Training Programs related to IT. "
+unit_of_analysis = "Training promoted by Detroit at work"
+universe = "Training courses"
+owner = "Detroit at Work"
+collector = "Detroit at Work"
+collection_reason = "To connect job seekers with trainings"
+source_url = "https://detroitatwork.com/training"
 
-[tables.codes] # The 'codes' table
-# If you don't want to provide any particular field, you can just comment 
-# it out and the DB will handle the nulls.
-name="codes"
-description = "The table that holds all NAICS codes and parent categories"
-unit_of_analysis = "Industry categories (+ parents & children)"
-universe = "Industry categories agreed on between Mexico, US, and Canada"
-owner = "Office of Management and budget (OMB)"
-collector = "Office of Management and budget (OMB)"
-# collection_method = "Leave commented if not using"
-collection_reason = """To allow for a high level of comparability in
-business statistics among the North American countries."""
-source_url = "https://www.census.gov/naics/?99967"
-# notes = "Leave commented if not using"
-# use_conditions = "Leave commented if not using"
-# cadence = "Leave commented if not using"
+[[tables.trainings.variables]]
+name = "provider"
+description = "The organization providing the training"
 
-# Variables are placed in their own sub-list with the table hierarchy
-[[tables.codes.variables]]
-# This var shows all the fields, but it's not necessary to include all in
-# every one. The DB app will figure it out.
-name = "code"
-description = "The code or parent code for each NAICS industry"
-parent_variable = "code"
-# suppression_threshold = "Leave commented if not using."
-standard = "NAICS"
+[[tables.trainings.variables]]
+name = "program"
+description = "The name of the program being provided"
 
-[[tables.codes.variables]]
-name = "title"
-description = "The name of the industry associated with the code"
+[[tables.trainings.variables]]
+name = "location"
+description = "The address of the training"
 
-[[tables.codes.variables]]
+[[tables.trainings.variables]]
+name = "clinical_location"
+description = "Unsure (MV) (mostly null)"
+
+[[tables.trainings.variables]]
+name = "phone"
+description = "The phone number of the provider"
+
+[[tables.trainings.variables]]
+name = "website"
+description = "Website for the provider"
+
+[[tables.trainings.variables]]
 name = "description"
-description = "The code or parent code for each NAICS industry"
+description = "The description of the training"
 
-# Editions tracks when items were uploaded.
-[tables.codes.editions.2024-10-01]
-# This is the key that identifies the edition in the system -- it should
-# be the month beginning, year beginning, or q beginning for this dataset.
-edition_date = "2024-10-01"
+[[tables.trainings.variables]]
+name = "reading_grade_level"
+description = "The reading grade level expected for the training"
 
-# Any notes that go with the edition specifically.
-notes = "First upload of this dataset"
+[[tables.trainings.variables]]
+name = "math_grade_level"
+description = "The math grade level expected for the training"
 
- # Path to the raw file REQUIRED
-raw_path = "/home/michael/projects/new/system/data/naics/raw/naics_descriptions_2022.csv"
-# 'start' & 'end' are special fields -- if they are defined, they will be 
-# appended to every row of the data table.
+[[tables.trainings.variables]]
+name = "convictions_prohibited"
+description = "Convictions, if any, that prohibit students from attending the course"
 
+[[tables.trainings.variables]]
+name = "other_requirements"
+description = "Other requirements for the course."
 
-# Think of 'start' & 'end' as though you were to query using a timestamp with 
-# BETWEEN and get a valid result. One of the checks will be that these
-# don't overlap between editions.
+[[tables.trainings.variables]]
+name = "required_supplies"
+description = "Supplies ('laptop' for instance) that are required to participate in the course."
 
-# To really get into it, check out 'Allen's interval algebra.'
-start = "2024-01-01" 
-end = "9999-12-31" # This is the 'forever' standard. This should be 
-                   # applied to rows that are 'current.'
+[[tables.trainings.variables]]
+name = "weeks"
+description = "Number of weeks of the course"
 
-# If you leave them undefined, it's best practice to have some kind of
-# date information in the variables.
+[[tables.trainings.variables]]
+name = "total_hours"
+description = "Total hours of coursework"
 
-# These are for citations and only appear on the editions table.
-published = "2025-01-01"
-acquired = "2025-01-01" 
+[[tables.trainings.variables]]
+name = "schedule"
+description = "Schedule for the course"
 
+[[tables.trainings.variables]]
+name = "max_students"
+description = "Maximum number of students allowed in each class"
 
-[tables.industry_detail]
-name="industry_detail"
-description = "All detail codes for NAICS (no tree)"
-unit_of_analysis = "Industry categories (+ parents & children)"
-universe = "Industry categories agreed on between Mexico, US, and Canada"
-owner = "Office of Management and budget (OMB)"
-collector = "Office of Management and budget (OMB)"
-collection_reason = """To allow for a high level of comparability in
-business statistics among the North American countries."""
-source_url = "https://www.census.gov/naics/?99967"
-notes = """The code on this table can reference several industry descriptions."""
+[[tables.trainings.variables]]
+name = "students_per_instructor"
+description = "Number of students per instructor in each course"
 
-[[tables.industry_detail.variables]]
-name = "id"
-description = "An surrogate ID number for each description."
+[[tables.trainings.variables]]
+name = "completion_rate"
+description = "Percentage of students who complete the training program"
 
-[[tables.industry_detail.variables]]
-name = "code"
-description = "The code that best aligns with the industry described"
-standard = "NAICS"
+[[tables.trainings.variables]]
+name = "placement_rate"
+description = "Percentage of graduates who are placed in employment related to their training within 120 days of completing the program Training Related"
 
-[[tables.industry_detail.variables]]
-name = "industry_description"
-description = "The detailed description of an industry associtaed with the naics code."
+[[tables.trainings.variables]]
+name = "credential_attainment_rate"
+description = "Percentage of students who complete the training program and earn an industry recognized certification or license"
 
-[tables.industry_detail.editions.2025-01-01]
+[[tables.trainings.variables]]
+name = "credential_earned"
+description = "Credentials graduates earn"
+
+[[tables.trainings.variables]]
+name = "occupations_prepared_for"
+description = "Occupations graduates will be prepared to enter"
+
+[[tables.trainings.variables]]
+name = "average_grad_occ_wage"
+description = "The average wage of the occupations the graduate is trained for"
+
+[[tables.trainings.variables]]
+name = "hs_diploma_required"
+description = "High School Diploma / GED required to enroll"
+
+[[tables.trainings.variables]]
+name = "drug_screen_required"
+description = "A drug screen is required for enrollment"
+
+[[tables.trainings.variables]]
+name = "background_check_required"
+description = "A background check is required for enrollment"
+
+[[tables.trainings.variables]]
+name = "valid_drivers_license_required"
+description = "A valid drivers license is required for enrollment"
+
+[[tables.trainings.variables]]
+name = "exam"
+description = "There is an exam at the end of the training"
+
+[[tables.trainings.variables]]
+name = "equipment_trained_on"
+description = "Equipment graduates will be trained to use"
+
+[[tables.trainings.variables]]
+name = "in_person_online"
+description = "Is the training in person, online or hybrid?"
+
+[tables.trainings.editions.2025-01-01]
 edition_date = "2025-01-01"
 notes = "First upload of this dataset"
-raw_path = "/home/michael/projects/new/system/data/naics/raw/naics_index_file_2022.csv"
-start = "2024-01-01" 
-end = "9999-12-31"
-published = "2025-01-01"
-acquired = "2025-01-01" 
-
-
+raw_path = "V:\\DATA\\Business and employment\\Detroit at Work\\Data\\Raw\\trainings_scape_20241216.csv"
+start = "2024-12-01"
+end = "9999-12-31" # Forever
+published = "2024-12-01"
+acquired = "2024-12-16"

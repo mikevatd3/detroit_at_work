@@ -7,7 +7,7 @@ from detroit_at_work import setup_logging, db_engine, metadata_engine
 from metadata_audit.capture import record_metadata
 from sqlalchemy.orm import sessionmaker
 
-from detroit_at_work.schema import TrainingsSchema, rename
+from detroit_at_work.schema import Trainings, renames
 
 logger = setup_logging()
 
@@ -15,6 +15,55 @@ table_name = "trainings"
 
 with open("metadata.toml", "rb") as md:
     metadata = tomli.load(md)
+
+
+def remove_hours_weeks(string):
+    """
+    Takes inputs like '1234 hours' or '5678 weeks'
+    and returns 1234, 5678.
+    """
+    try:
+        digits, *_ = string.split(" ")
+
+        return int(digits)
+
+    except AttributeError:
+        return string
+
+
+def replace_na(val):
+    if val == "N/A":
+        return None
+    return val
+
+
+def clear_pct(pct_str: str):
+    return int(pct_str.replace("%", ""))
+
+
+def yes_no_to_bool(yn: str):
+    if yn == "Yes":
+        return True
+    return False
+
+
+fields_for_yn = [
+    "hs_diploma_required",
+    "drug_screen_required",
+    "background_check_required",
+    "valid_drivers_license_required",
+    "exam",
+]
+
+fields_remove_na = [
+    "clinical_location",
+    "convictions_prohibited",
+    "other_requirements",
+    "students_per_instructor",
+    "completion_rate",
+    "placement_rate",
+    "credential_attainment_rate",
+]
 
 
 @click.command()
@@ -28,21 +77,48 @@ def main(edition_date, metadata_only):
 
     result = (
         pd.read_csv(edition["raw_path"])
-        .rename(
+        .rename(columns=renames)
+        .dropna(subset="program")
+        .rename( # rename the columns that I have to fix
             columns={
-                "Code": "code",
-                "Title": "title",
-                "Description": "description",
+                "weeks": "__weeks",
+                "total_hours": "__total_hours",
+                **{
+                    col: f"__{col}"
+                    for col in fields_for_yn + fields_remove_na
+                }
             }
         )
-        .drop("Unnamed: 0", axis=1)
+        .assign(
+            # A few variables need to be standardized to integers
+            weeks = lambda df: df["__weeks"].apply(replace_na).apply(remove_hours_weeks),
+            total_hours = lambda df: df["__total_hours"].apply(remove_hours_weeks),
+            **{
+                col: lambda df, col=col: df[f"__{col}"].apply(yes_no_to_bool)
+                for col in fields_for_yn
+            },
+            **{
+                col: lambda df, col=col: df[f"__{col}"].apply(replace_na)
+                for col in fields_remove_na
+            }
+        )
+        .drop(
+            [
+                "__weeks",
+                "__total_hours",
+                *[
+                    f"__{col}" for col in fields_for_yn + fields_remove_na
+                ]
+            ], axis=1
+        )
     )
 
+    logger.info(f"Number of rows: {len(result)}")
     logger.info(f"Cleaning {table_name} was successful validating schema.")
 
     # Validate
     try:
-        validated = TrainingsSchema.validate(result)
+        validated = Trainings.validate(result)
         logger.info(
             f"Validating {table_name} was successful. Recording metadata."
         )
@@ -53,7 +129,7 @@ def main(edition_date, metadata_only):
         logger.info("Connected to metadata schema.")
 
         record_metadata(
-            TrainingsSchema,
+            Trainings,
             __file__,
             table_name,
             metadata,
