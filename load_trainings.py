@@ -38,7 +38,10 @@ def replace_na(val):
 
 
 def clear_pct(pct_str: str):
-    return int(pct_str.replace("%", ""))
+    try:
+        return int(pct_str.replace("%", ""))
+    except (AttributeError, ValueError):
+        return pct_str
 
 
 def yes_no_to_bool(yn: str):
@@ -63,6 +66,8 @@ fields_remove_na = [
     "completion_rate",
     "placement_rate",
     "credential_attainment_rate",
+    "math_grade_level",
+    "equipment_trained_on"
 ]
 
 
@@ -98,7 +103,7 @@ def main(edition_date, metadata_only):
                 for col in fields_for_yn
             },
             **{
-                col: lambda df, col=col: df[f"__{col}"].apply(replace_na)
+                col: lambda df, col=col: df[f"__{col}"].apply(clear_pct).apply(replace_na)
                 for col in fields_remove_na
             }
         )
@@ -111,6 +116,8 @@ def main(edition_date, metadata_only):
                 ]
             ], axis=1
         )
+        .reset_index()
+        .rename(columns={"index": "id"})
     )
 
     logger.info(f"Number of rows: {len(result)}")
@@ -124,6 +131,7 @@ def main(edition_date, metadata_only):
         )
     except (SchemaError, SchemaErrors) as e:
         logger.error(f"Validating {table_name} failed.", e)
+        return
 
     with metadata_engine.connect() as db:
         logger.info("Connected to metadata schema.")

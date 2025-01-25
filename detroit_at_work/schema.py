@@ -1,3 +1,4 @@
+import pandas as pd
 import pandera as pa
 from pandera.typing import Series
 
@@ -28,27 +29,27 @@ class Trainings(pa.DataFrameModel):
     website: str = pa.Field()
     description: str = pa.Field()
     reading_grade_level: str = pa.Field()
-    math_grade_level: str = pa.Field()
+    math_grade_level: str = pa.Field(nullable=True)
     convictions_prohibited: str = pa.Field(nullable=True)
-    other_requirements: str = pa.Field()
+    other_requirements: str = pa.Field(nullable=True)
     required_supplies: str = pa.Field()
     weeks: int = pa.Field(nullable=True)
     total_hours: int = pa.Field(nullable=True)
     schedule: str = pa.Field()
     max_students: int = pa.Field()
-    students_per_instructor: int = pa.Field(nullable=True)
+    students_per_instructor: pd.Int64Dtype = pa.Field(nullable=True)
     completion_rate: float = pa.Field(nullable=True)
     placement_rate: float = pa.Field(nullable=True)
     credential_attainment_rate: float = pa.Field(nullable=True)
     credential_earned: str = pa.Field()
     occupations_prepared_for: str = pa.Field() # This is many to many ?
-    average_grad_occ_wage: float = pa.Field(nullable=True) # If you can link to SOC we can calculate
+    average_grad_occ_wage: str = pa.Field(nullable=True) # If you can link to SOC we can calculate
     hs_diploma_required: bool = pa.Field()
     drug_screen_required: bool = pa.Field()
     background_check_required: bool = pa.Field()
     valid_drivers_license_required: bool = pa.Field()
     exam: bool = pa.Field()
-    equipment_trained_on: str = pa.Field()
+    equipment_trained_on: str = pa.Field(nullable=True)
     in_person_online: str = pa.Field()
 
     class Config:  # type: ignore
