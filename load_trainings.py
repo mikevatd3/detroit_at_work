@@ -67,7 +67,7 @@ fields_remove_na = [
     "placement_rate",
     "credential_attainment_rate",
     "math_grade_level",
-    "equipment_trained_on"
+    "equipment_trained_on",
 ]
 
 
