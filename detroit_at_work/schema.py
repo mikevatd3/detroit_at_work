@@ -81,7 +81,7 @@ renames = {
     "Credentials graduates earn": "credential_earned",
     "Occupations graduates will be prepared to enter": "occupations_prepared_for", # This is many to many ?
     "Average wage of graduates in these occupations": "average_grad_occ_wage",
-    "High School Diploma / GED": "hs_diploma_required",
+    "High School Diploma / GED": "hs_diploma_ged_required",
     "Drug Screen": "drug_screen_required",
     "Criminal Background Check": "background_check_required",
     "Valid Driver License": "valid_drivers_license_required",
